@@ -19,7 +19,18 @@ module Kontena::Cli::Nodes
     end
 
     def node_status(node)
-      node['connected'] ? pastel.green('online') : pastel.red('offline')
+      case node_status = node['status']
+      when 'created'
+        pastel.dark('created')
+      when 'connecting'
+        pastel.cyan('connecting')
+      when 'online'
+        pastel.green('online')
+      when 'offline'
+        pastel.red('offline')
+      else
+        pastel.white(node_status.to_s)
+      end
     end
 
     def node_initial(node, grid)

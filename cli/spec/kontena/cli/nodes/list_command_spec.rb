@@ -25,13 +25,15 @@ describe Kontena::Cli::Nodes::ListCommand do
       end
 
       context "with a single node" do
-
         before do
           allow(client).to receive(:get).with('grids/test-grid/nodes').and_return(
             {
               'nodes' => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
@@ -49,19 +51,25 @@ describe Kontena::Cli::Nodes::ListCommand do
         end
       end
 
-      context "with a single online node" do
+      context "with one online and one offline node" do
         before do
           allow(client).to receive(:get).with('grids/test-grid/nodes').and_return(
             { "nodes" => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testBBB',
                   "connected" => false,
+                  "updated" => false,
+                  "status" => "offline",
                   "name" => "node-2",
                   "node_number" => 2,
                   "initial_member" => true,
@@ -85,14 +93,20 @@ describe Kontena::Cli::Nodes::ListCommand do
           allow(client).to receive(:get).with('grids/test-grid/nodes').and_return(
             { "nodes" => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testBBB',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-2",
                   "node_number" => 2,
                   "initial_member" => true,
@@ -116,14 +130,20 @@ describe Kontena::Cli::Nodes::ListCommand do
           allow(client).to receive(:get).with('grids/test-grid/nodes').and_return(
             { "nodes" => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testBBB',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-2",
                   "node_number" => 2,
                   "initial_member" => true,
@@ -131,11 +151,14 @@ describe Kontena::Cli::Nodes::ListCommand do
                 },
                 # node has just connected, but not sent any node_info yet
                 {
+                  "id" => 'testCCC',
                   "connected" => false,
+                  "updated" => false,
+                  "status" => "connecting",
                   "name" => nil,
                   "node_number" => 3,
                   "initial_member" => false,
-                  'agent_version' => nil,
+                  'agent_version' => '1.1-dev',
                 },
               ]
             }
@@ -146,7 +169,7 @@ describe Kontena::Cli::Nodes::ListCommand do
           expect{subject.run([])}.to output_table [
             [':warning node-1', '1.1-dev', 'online',  '1 / 3', '-'],
             [':warning node-2', '1.1-dev', 'online',  '2 / 3', '-'],
-            [':offline (initializing)', 'offline', '-', '-'], # missing agent_version
+            [':offline (initializing)', '1.1-dev', 'connecting', '-', '-'],
           ]
         end
       end
@@ -156,21 +179,30 @@ describe Kontena::Cli::Nodes::ListCommand do
           allow(client).to receive(:get).with('grids/test-grid/nodes').and_return(
             { "nodes" => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testBBB',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-2",
                   "node_number" => 2,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testCCC',
                   "connected" => false,
+                  "updated" => true,
+                  "status" => "offline",
                   "name" => "node-3",
                   "node_number" => 3,
                   "initial_member" => true,
@@ -196,21 +228,30 @@ describe Kontena::Cli::Nodes::ListCommand do
             {
               "nodes" => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testBBB',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-2",
                   "node_number" => 2,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testDDD',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-4",
                   "node_number" => 4,
                   "initial_member" => false,
@@ -236,21 +277,30 @@ describe Kontena::Cli::Nodes::ListCommand do
             {
               "nodes" => [
                 {
+                  "id" => 'testAAA',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-1",
                   "node_number" => 1,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testBBB',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-2",
                   "node_number" => 2,
                   "initial_member" => true,
                   'agent_version' => '1.1-dev',
                 },
                 {
+                  "id" => 'testCCC',
                   "connected" => true,
+                  "updated" => true,
+                  "status" => "online",
                   "name" => "node-3",
                   "node_number" => 3,
                   "initial_member" => true,
