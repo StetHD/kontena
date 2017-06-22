@@ -250,15 +250,15 @@ describe WebsocketBackend, celluloid: true, eventmachine: true do
     end
 
     describe '#on_open' do
-      before do
-        # force sync plugin
-        allow(EM).to receive(:defer) do |&block|
-          block.call
-        end
-      end
-
       context 'with a valid grid token' do
         let(:grid_token) { 'secret123' }
+
+        before do
+          # force sync plugin
+          allow(EM).to receive(:defer) do |&block|
+            block.call
+          end
+        end
 
         it 'accepts the connection and creates a new host node' do
           expect(subject.logger).to receive(:info).with('new node nodeABC connected using grid token')
@@ -296,8 +296,27 @@ describe WebsocketBackend, celluloid: true, eventmachine: true do
         end
 
         it 'accepts the connection and sets the node ID' do
+          expect(host_node.status).to eq :created
+
           expect(subject.logger).to receive(:info).with('new node node-1 connected using node token with node_id nodeABC')
           expect(subject.logger).to receive(:info).with(/node node-1 agent version 0.9.1 connected at #{connected_at}, \d+\.\d+s ago/)
+
+          # sync defer { NodePlugger#plugin! }
+          allow(EM).to receive(:defer) do |&block|
+            host_node.reload # after #find_node_by_node_token
+
+            expect(host_node.connected).to eq false
+            expect(host_node.updated).to eq false
+            expect(host_node.status).to eq :connecting
+
+            block.call
+
+            host_node.reload # after NodePlugger#plugin!
+
+            expect(host_node.connected).to eq true
+            expect(host_node.updated).to eq false
+            expect(host_node.status).to eq :connecting
+          end
 
           expect{
             subject.on_open(client_ws, rack_req)
@@ -310,6 +329,8 @@ describe WebsocketBackend, celluloid: true, eventmachine: true do
           expect(host_node.agent_version).to eq '0.9.1'
           expect(host_node.connected).to eq true
           expect(host_node.connected_at.to_s).to eq connected_at.to_datetime.to_s
+          expect(host_node.updated).to eq false
+          expect(host_node.status).to eq :connecting
 
           client = subject.client_for_id(node_id)
 
@@ -335,6 +356,11 @@ describe WebsocketBackend, celluloid: true, eventmachine: true do
           host_node.set(node_id: node_id, labels: ['test=yes', 'test2=no'])
 
           expect(subject.logger).to receive(:info).with(/node node-1 agent version 0.9.1 connected at #{connected_at}, \d+\.\d+s ago/)
+
+          # sync defer { NodePlugger#plugin! }
+          allow(EM).to receive(:defer) do |&block|
+            block.call
+          end
 
           expect{
             subject.on_open(client_ws, rack_req)
