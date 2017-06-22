@@ -272,6 +272,7 @@ describe WebsocketBackend, celluloid: true, eventmachine: true do
 
           expect(host_node.node_id).to eq node_id
           expect(host_node.labels).to eq ['test=yes']
+          expect(host_node.agent_version).to eq '0.9.1'
           expect(host_node.connected).to eq true
           expect(host_node.connected_at.to_s).to eq connected_at.to_datetime.to_s
 
@@ -306,6 +307,7 @@ describe WebsocketBackend, celluloid: true, eventmachine: true do
 
           expect(host_node.node_id).to eq node_id
           expect(host_node.labels).to eq ['test=yes']
+          expect(host_node.agent_version).to eq '0.9.1'
           expect(host_node.connected).to eq true
           expect(host_node.connected_at.to_s).to eq connected_at.to_datetime.to_s
 
