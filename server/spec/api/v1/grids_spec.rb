@@ -230,6 +230,8 @@ describe '/v1/grids', celluloid: true do
           'id' => nil,
           'name' => 'test-1',
           'token' => String,
+          'connected' => false,
+          'updated' => false,
         )
       end
     end

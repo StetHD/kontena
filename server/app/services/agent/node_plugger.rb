@@ -25,7 +25,7 @@ module Agent
     def update_node!(connected_at)
       connected_node = HostNode.where(:id => node.id)
         .any_of({:connected_at => nil}, {:connected_at.lt => connected_at})
-        .find_one_and_update({:$set => {connected: true, last_seen_at: Time.now.utc, connected_at: connected_at}})
+        .find_one_and_update({:$set => {connected: true, updated: false, last_seen_at: Time.now.utc, connected_at: connected_at}})
 
       fail "Node #{@node} has already re-connected at #{@node.connected_at}" unless connected_node
 

@@ -1,6 +1,7 @@
 json.id node.node_id
 json.token node.token
 json.connected node.connected
+json.updated node.updated
 json.created_at node.created_at
 json.updated_at node.updated_at
 json.connected_at node.connected_at
