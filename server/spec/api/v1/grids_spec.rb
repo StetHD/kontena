@@ -232,6 +232,7 @@ describe '/v1/grids', celluloid: true do
           'token' => String,
           'connected' => false,
           'updated' => false,
+          'status' => 'created',
         )
       end
     end

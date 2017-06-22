@@ -25,14 +25,57 @@ describe HostNode do
   it { should have_index_for(node_id: 1) }
 
 
-  describe '#connected?' do
-    it 'returns true when connected' do
-      subject.connected = true
-      expect(subject.connected?).to eq(true)
+  context 'for a newly created node' do
+    subject { described_class.new }
+
+    it 'is not connected' do
+      expect(subject.connected?).to eq(false)
+    end
+    it 'is not updated' do
+      expect(subject.updated?).to eq(false)
+    end
+    it 'is status=created' do
+      expect(subject.status).to eq :created
+    end
+  end
+
+  context 'for an initializing node that has just connected, but is not yet connected or updated' do
+    subject { described_class.new(node_id: 'nodeABC', connected: false, updated: false) }
+
+    it 'is status=initializing' do
+      expect(subject.status).to eq :initializing
+    end
+  end
+
+  context 'for an connecting node that has not yet connected or updated' do
+    subject { described_class.new(node_id: 'nodeABC', connected: true, updated: false) }
+
+    it 'is status=connecting' do
+      expect(subject.status).to eq :connecting
+    end
+  end
+
+  context 'for an connected node that has updated' do
+    subject { described_class.new(node_id: 'nodeABC', connected: true, updated: true) }
+
+    it 'is connected' do
+      expect(subject.connected?).to eq true
     end
 
-    it 'returns false when not connected' do
-      expect(subject.connected?).to eq(false)
+    it 'is status=connected' do
+      expect(subject.status).to eq :online
+    end
+  end
+
+  context 'for a disconnected node' do
+    subject { described_class.new(node_id: 'nodeABC', connected: false, updated: true) }
+
+    it 'is not connected' do
+      expect(subject.connected?).to eq false
+    end
+
+    it 'is status=ofline' do
+      expect(subject.status).to eq :offline
     end
   end
 

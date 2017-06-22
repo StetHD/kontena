@@ -97,6 +97,21 @@ class HostNode
     end
   end
 
+  # @return [Symbol]
+  def status
+    if self.node_id.nil?
+      return :created # node created with token, but agent has not yet connected
+    elsif !self.connected && !self.updated
+      return :connecting # brief window between WebsocketBackend#on_open and NodePlugger#plugin!
+    elsif self.connected && !self.updated
+      return :connecting # waiting for /nodes/update RPC
+    elsif self.connected
+      return :online
+    else
+      return :offline
+    end
+  end
+
   # @return [Boolean]
   def connected?
     self.connected == true
